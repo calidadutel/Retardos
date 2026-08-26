@@ -1,0 +1,6 @@
+*.xlsx
+*.py
+__pycache__/
+index_respaldo.html
+index_pre_integracion.html
+*.log
