@@ -104,6 +104,9 @@ body{font-family:'Work Sans',system-ui,sans-serif;background:var(--bg);color:var
 .ms-tools{display:flex;gap:10px;padding:8px 10px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);}
 .ms-tools button{border:0;background:none;font-family:'Work Sans';font-size:11.5px;font-weight:600;color:var(--green-d);cursor:pointer;}
 .ms-tools .cerrar{margin-left:auto;color:var(--text3);}
+.ms-search-wrap{padding:8px 10px 6px;background:var(--surface);}
+.ms-search{width:100%;border:1px solid var(--border);border-radius:7px;padding:7px 9px;font:12px 'Work Sans';color:var(--text);outline:none;}
+.ms-search:focus{border-color:var(--green-d);box-shadow:0 0 0 2px rgba(10,154,10,.10);}
 .ms-opt{display:flex;align-items:center;gap:9px;padding:7px 11px;font-size:12.8px;cursor:pointer;}
 .ms-opt:hover{background:var(--surface2);}
 .ms-opt input{accent-color:var(--green-brand);cursor:pointer;}
@@ -138,14 +141,20 @@ body{font-family:'Work Sans',system-ui,sans-serif;background:var(--bg);color:var
 .st-txt{font-size:12.5px;color:var(--text2);margin-top:11px;padding-top:11px;border-top:1px solid var(--border);}
 .st-txt b{font-weight:600;color:var(--text);}
 
-.rank-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
-.rank-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 17px;min-width:0;}
+.rank-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:16px;align-items:stretch;}
+.rank-card{border:1px solid var(--border);border-radius:var(--r);padding:16px 17px;min-width:0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 6px 18px rgba(22,27,22,.06);}
+.rank-card.rank-best{background:linear-gradient(145deg,#dcefe0 0%,#edf7ef 100%);border-color:#acd1b4;}
+.rank-card.rank-focus{background:linear-gradient(145deg,#f9ded9 0%,#fff0ed 100%);border-color:#e9b6ae;}
 .rank-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:11px;}
-.rank-title{font-family:'Sora';font-size:14px;font-weight:600;}.rank-note{font-size:10.5px;color:var(--text3);margin-top:2px;}
-.rank-list{display:grid;gap:5px;}
-.rank-row{display:grid;grid-template-columns:28px minmax(130px,1fr) 68px 62px 68px 82px;gap:7px;align-items:center;padding:8px 9px;border:1px solid transparent;border-radius:9px;background:var(--surface2);cursor:pointer;text-align:left;color:inherit;font-family:inherit;width:100%;}
-.rank-row:hover{border-color:#cbd2c7;background:#f8faf6}.rank-row.top3{background:#f5f8f2}.rank-row.focus{background:#fff8f6;border-color:#f0d3cf}
-.rank-pos{font-family:'Sora';font-size:12px;color:var(--text3);font-weight:600}.rank-name{font-size:11.5px;font-weight:600;line-height:1.25;overflow:hidden;text-overflow:ellipsis}.rank-metric{text-align:right;font-size:10.5px;color:var(--text3)}.rank-metric b{font-family:'Sora';font-size:12px;color:var(--text);display:block}.rank-heads{display:grid;grid-template-columns:28px minmax(130px,1fr) 68px 62px 68px 82px;gap:7px;padding:0 9px 5px;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.35px;color:var(--text3);text-align:right}.rank-heads span:nth-child(-n+2){text-align:left}.rank-empty{font-size:12px;color:var(--text3);padding:16px 4px;}
+.rank-title{font-family:'Sora';font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px;}.rank-title i{font-size:18px}.rank-note{font-size:10.5px;color:var(--text2);margin-top:2px;}
+.rank-list{display:grid;gap:6px;grid-auto-rows:64px;flex:1;}
+.rank-row{display:grid;grid-template-columns:32px minmax(130px,1fr) 68px 62px 68px 82px;gap:7px;align-items:center;padding:8px 9px;border:1px solid transparent;border-radius:9px;cursor:pointer;text-align:left;color:inherit;font-family:inherit;width:100%;height:64px;min-height:64px;}
+.rank-best .rank-row{background:rgba(255,255,255,.66);border-color:rgba(126,174,137,.32)}
+.rank-best .rank-row:hover{background:#fff;border-color:#7eae89}.rank-best .rank-row.top3{background:#cce6d1;border-color:#9bc6a4}
+.rank-focus .rank-row{background:rgba(255,255,255,.67);border-color:rgba(210,126,113,.28)}
+.rank-focus .rank-row:hover{background:#fff;border-color:#d27e71}.rank-row.focus{background:#fff5f3}
+.rank-pos{font-family:'Sora';font-size:12px;color:var(--text3);font-weight:600;text-align:center}.rank-pos.medal{font-size:20px;line-height:1}.rank-name{font-size:11.5px;font-weight:600;line-height:1.25;overflow:hidden;text-overflow:ellipsis}.rank-metric{text-align:right;font-size:10.5px;color:var(--text3)}.rank-metric b{font-family:'Sora';font-size:12px;color:var(--text);display:block}.rank-heads{display:grid;grid-template-columns:32px minmax(130px,1fr) 68px 62px 68px 82px;gap:7px;padding:0 9px 5px;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.35px;color:var(--text3);text-align:right}.rank-heads span:nth-child(-n+2){text-align:left}.rank-empty{font-size:12px;color:var(--text3);padding:16px 4px;}
+.rank-best>.sev-badge,.rank-best .rank-head>.sev-badge{background:var(--green-d);color:#fff}.rank-focus>.sev-badge,.rank-focus .rank-head>.sev-badge{background:var(--red);color:#fff}
 .context{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:-4px 0 14px;font-size:11.5px;color:var(--text3)}.context b{color:var(--text);font-weight:600}.context-tag{background:var(--green-l);color:var(--green-d);border-radius:20px;padding:3px 9px;font-weight:600}
 @media(max-width:1120px){.rank-grid{grid-template-columns:1fr}.rank-row,.rank-heads{grid-template-columns:28px minmax(130px,1fr) repeat(4,70px)}}
 @media(max-width:660px){.rank-card{padding:14px 12px}.rank-row,.rank-heads{grid-template-columns:24px minmax(118px,1fr) 54px 56px}.rank-row>*:nth-child(5),.rank-row>*:nth-child(6),.rank-heads>*:nth-child(5),.rank-heads>*:nth-child(6){display:none}}
@@ -162,6 +171,9 @@ tr.grp.open{background:var(--green-l);}
 tr.open .car{transform:rotate(90deg);}
 tr.kid td{background:#fbfcfa;font-size:12.3px;padding:7px 11px;color:var(--text2);}
 tr.kid td:first-child{padding-left:30px;}
+tr.kid.kid-low td{background:#eef0ed;}
+tr.kid.kid-mid td{background:#fff3c9;}
+tr.kid.kid-crit td{background:#fde7e4;}
 .pcell{display:flex;align-items:center;gap:8px;justify-content:flex-end;}
 .pbar{width:56px;height:5px;border-radius:3px;background:var(--surface2);overflow:hidden;flex:none;}
 .pbar i{display:block;height:100%;border-radius:3px;}
@@ -170,6 +182,7 @@ tr.kid td:first-child{padding-left:30px;}
 .ok{color:var(--green-d);} .warn{color:var(--yellow);} .bad{color:var(--red);}
 .sev-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px;display:inline-block;white-space:nowrap}.sev-bajo{background:var(--green-l);color:var(--green-d)}.sev-medio{background:var(--yellow-l);color:var(--yellow)}.sev-critico{background:var(--red-l);color:var(--red)}.sev-na{background:var(--surface2);color:var(--text3)}
 .sort-h{border:0;background:none;font:inherit;color:inherit;text-transform:inherit;letter-spacing:inherit;font-weight:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:4px}.sort-h:hover{color:var(--green-d)}
+.eq-sort{width:100%;justify-content:flex-end}.eq-sort.first{justify-content:flex-start}
 tr.focus-agent td{background:#f0f7ed;}
 
 .lock{text-align:center;padding:52px 20px;}
@@ -267,7 +280,8 @@ const FIN_SEM = 540;
 const CORTES = [
   {id:'MAT', lab:'Matutino', grupos:['MAT']},
   {id:'MIX', lab:'Mixto', grupos:['MIX']},
-  {id:'VES', lab:'Vespertino', grupos:['CVES','VES']}
+  {id:'VES', lab:'Vespertino', grupos:['CVES','VES']},
+  {id:'ALL', lab:'Todos', grupos:['MAT','MIX','CVES','VES']}
 ];
 const G_POR_TURNO = {}; GRUPOS.forEach(g => g.turnos.forEach(t => G_POR_TURNO[t] = g.id));
 const G_BY_ID = {}; GRUPOS.forEach(g => G_BY_ID[g.id] = g);
@@ -275,6 +289,8 @@ const G_BY_ID = {}; GRUPOS.forEach(g => G_BY_ID[g.id] = g);
 let META = 4, corte = 'MAT', DOW = 1, dim = 'g', OPEN_MS = null, TAB = 'gen';
 let NOM_SORT_DESC = true, FOCUS_AGENT = null;
 const MS_STATE = {g:[], c:[], s:[], t:[]};
+const MS_QUERY = {g:'', c:'', s:'', t:''};
+let EQ_SORT = {key:'pRet', desc:true};
 const ABIERTOS = new Set();
 const nf = new Intl.NumberFormat('es-MX');
 const $ = id => document.getElementById(id);
@@ -323,10 +339,13 @@ function agg(d){
     }
   });
   t.sinDatos = t.esp === 0;
-  t.pRet = t.esp ? t.ret*100/t.esp : null;
+  /* Puntualidad y retardos comparten el mismo universo: agentes conectados.
+     Al derivar puntualidad del porcentaje redondeado de retardos, las dos
+     tarjetas siempre suman exactamente 100.0%. */
+  t.pRet = t.con ? Math.round((t.ret*100/t.con)*10)/10 : null;
   t.pFal = t.esp ? t.fal*100/t.esp : 0;
   t.pCon = t.esp ? t.con*100/t.esp : 0;
-  t.pPun = t.esp ? t.pun*100/t.esp : null;
+  t.pPun = t.pRet === null ? null : Math.round((100-t.pRet)*10)/10;
   return t;
 }
 const cls  = p => p === null ? '' : p <= META ? 'ok' : p <= META+1 ? 'warn' : 'bad';
@@ -355,18 +374,18 @@ function renderKPIs(t,d){
     <div class="kpi-lbl"><i class="uil uil-check-circle"></i>Puntualidad</div>
     <div class="kpi-val">${pTxt(t.pPun)}</div>
     <div class="kpi-bar"><i style="width:${t.pPun||0}%"></i></div>
-    <div class="kpi-sub">${nf.format(t.pun)} puntuales de ${nf.format(t.esp)} esperados al corte</div>
+    <div class="kpi-sub">${nf.format(t.pun)} puntuales de ${nf.format(t.con)} conectados</div>
   </div>
   <div class="kpi ${kr}">
     <div class="kpi-lbl"><i class="uil uil-percentage"></i>% de retardos</div>
     <div class="kpi-val">${pTxt(t.pRet)}</div>
     <div class="kpi-bar"><i style="width:${Math.min(100,(t.pRet||0)/(META*3)*100)}%"></i></div>
-    <div class="kpi-sub">Meta máxima ${META.toFixed(1)}% · sobre esperados</div>
+    <div class="kpi-sub">Meta máxima ${META.toFixed(1)}% · sobre conectados</div>
   </div>
   <div class="kpi ${kr}">
     <div class="kpi-lbl"><i class="uil uil-clock-two"></i>Retardos</div>
     <div class="kpi-val">${nf.format(t.ret)}</div>
-    <div class="kpi-bar"><i style="width:${t.esp?t.ret*100/t.esp:0}%"></i></div>
+    <div class="kpi-bar"><i style="width:${t.pRet||0}%"></i></div>
     <div class="kpi-sub">${t.crit} críticos de 16 minutos o más</div>
   </div>
   <div class="kpi ${eq.fuera ? 'k-bad':'k-ok'}">
@@ -454,6 +473,7 @@ function buildMS(key, todo){
     <div class="ms-dd${OPEN_MS === key ? ' open' : ''}">
       <div class="ms-tools"><button data-a="all">Todos</button><button data-a="none">Ninguno</button>
         <button class="cerrar" data-a="close">Cerrar</button></div>
+      ${key !== 't' ? `<div class="ms-search-wrap"><input class="ms-search" type="search" placeholder="Buscar nombre..." aria-label="Buscar ${ETIQ[key]}" value="${esc(MS_QUERY[key])}"></div>` : ''}
       ${ops.map(o => `<label class="ms-opt"><input type="checkbox" value="${esc(o.v)}" ${sel.includes(o.v)?'checked':''}>${esc(o.l)}</label>`).join('')}
     </div>`;
   box.querySelector('.ms-trig').onclick = e => {
@@ -473,6 +493,18 @@ function buildMS(key, todo){
     MS_STATE[key] = inp.checked ? [...MS_STATE[key], v] : MS_STATE[key].filter(x => x !== v);
     ABIERTOS.clear(); FOCUS_AGENT=null; OPEN_MS = key; pintar();   // el desplegable se queda abierto
   });
+  const search = box.querySelector('.ms-search');
+  if(search){
+    const normalizar = v => String(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    const aplicarBusqueda = () => {
+      const q = normalizar(search.value.trim());
+      box.querySelectorAll('.ms-opt').forEach(opt => {
+        opt.style.display = !q || normalizar(opt.textContent).includes(q) ? '' : 'none';
+      });
+    };
+    search.oninput = () => { MS_QUERY[key] = search.value; aplicarBusqueda(); };
+    aplicarBusqueda();
+  }
 }
 document.addEventListener('click', () => {
   OPEN_MS = null;
@@ -503,10 +535,15 @@ function ordenarRanking(items, foco, porAsesor){
 function listaRanking(items,tipo,kind){
   const foco=tipo==='foco';
   if(!items.length) return '<div class="rank-empty">No hay equipos evaluados con esta selección.</div>';
-  return `<div class="rank-heads"><span>#</span><span>${kind==='s'?'Líder':'Asesor'}</span><span>Eval.</span><span>Ret.</span><span>% / Punt.</span><span>${foco?'Crít. / Estado':'Estado'}</span></div><div class="rank-list">`+
-    items.map((x,i)=>{ const [cc,ct]=chip(x.t.pRet); return `<button type="button" class="rank-row ${!foco&&i<3?'top3':''} ${foco?'focus':''}" data-kind="${kind}" data-name="${encodeURIComponent(x.n)}">
-      <span class="rank-pos">${i+1}</span><span class="rank-name" title="${esc(x.n)}">${esc(x.n)}</span>
-      <span class="rank-metric"><b>${x.t.esp}</b>personas</span><span class="rank-metric"><b>${x.t.ret}</b>retardos</span>
+  let nivelMedalla=0, pctAnterior=null;
+  return `<div class="rank-heads"><span>#</span><span>${kind==='s'?'Líder':'Asesor'}</span><span>Con.</span><span>Ret.</span><span>% / Punt.</span><span>${foco?'Crít. / Estado':'Estado'}</span></div><div class="rank-list">`+
+    items.map((x,i)=>{
+      const [cc,ct]=chip(x.t.pRet);
+      if(!foco && x.t.pRet !== null && x.t.pRet !== pctAnterior){ nivelMedalla++; pctAnterior=x.t.pRet; }
+      const medalla=!foco && x.t.pRet !== null && nivelMedalla<=3 ? ['','🥇','🥈','🥉'][nivelMedalla] : '';
+      return `<button type="button" class="rank-row ${medalla?'top3':''} ${foco?'focus':''}" data-kind="${kind}" data-name="${encodeURIComponent(x.n)}">
+      <span class="rank-pos ${medalla?'medal':''}" title="${medalla?'Posición '+nivelMedalla:''}">${medalla||i+1}</span><span class="rank-name" title="${esc(x.n)}">${esc(x.n)}</span>
+      <span class="rank-metric"><b>${x.t.con}</b>conect.</span><span class="rank-metric"><b>${x.t.ret}</b>retardos</span>
       <span class="rank-metric"><b class="${cls(x.t.pRet)}">${pTxt(x.t.pRet)}</b>${foco?'+'+Math.max(0,(x.t.pRet??0)-META).toFixed(1)+' pp':'punt. '+pTxt(x.t.pPun)}</span>
       <span class="rank-metric">${foco?'<b style="color:var(--red)">'+x.t.crit+'</b>':''}<span class="tg ${cc}">${ct}</span></span>
     </button>`;}).join('')+'</div>';
@@ -520,8 +557,8 @@ function renderRankings(d){
   const mejores=[...ordenarRanking([...elegibles],false,porAsesor),...ordenarRanking([...suplentes],false,porAsesor)].slice(0,10);
   const focos=[...ordenarRanking([...elegibles],true,porAsesor),...ordenarRanking([...suplentes],true,porAsesor)].slice(0,10);
   const nivel=porAsesor?'asesores del supervisor seleccionado':'supervisores dentro de los filtros';
-  $('rankings').innerHTML = `<section class="rank-card"><div class="rank-head"><div><div class="rank-title">TOP 10 — Mayor disciplina</div><div class="rank-note">Menor % de retardos · ${nivel}</div></div><span class="sev-badge sev-bajo">Mejor desempeño</span></div>${listaRanking(mejores,'mejor',kind)}</section>
-    <section class="rank-card"><div class="rank-head"><div><div class="rank-title">TOP 10 — Foco de atención</div><div class="rank-note">Mayor % de retardos · ${nivel}</div></div><span class="sev-badge sev-critico">Atención</span></div>${listaRanking(focos,'foco',kind)}</section>`;
+  $('rankings').innerHTML = `<section class="rank-card rank-best"><div class="rank-head"><div><div class="rank-title"><i class="uil uil-trophy"></i> TOP 10 — Lo están haciendo mejor</div><div class="rank-note">Menor % de retardos · ${nivel}</div></div><span class="sev-badge sev-bajo">¡Excelente!</span></div>${listaRanking(mejores,'mejor',kind)}</section>
+    <section class="rank-card rank-focus"><div class="rank-head"><div><div class="rank-title"><i class="uil uil-exclamation-triangle"></i> TOP 10 — Foco de atención</div><div class="rank-note">Mayor % de retardos · ${nivel}</div></div><span class="sev-badge sev-critico">Atención</span></div>${listaRanking(focos,'foco',kind)}</section>`;
   $('rankings').onclick=e=>{
     const b=e.target.closest('.rank-row'); if(!b)return;
     const n=decodeURIComponent(b.dataset.name);
@@ -540,20 +577,30 @@ function renderEquipos(d){
   const nom = {g:'Gerencia', c:'Coordinador', s:'Supervisor'};
   const map = new Map();
   d.forEach(r => { const k = r[dim]; if(!map.has(k)) map.set(k, []); map.get(k).push(r); });
-  const filas = [...map.entries()].map(([n, rs]) => ({n, rs, t: agg(rs)}))
-                 .sort((a,b) => (b.t.pRet ?? -1) - (a.t.pRet ?? -1) || b.t.esp - a.t.esp);
+  const filas = [...map.entries()].map(([n, rs]) => ({n, rs, t: agg(rs)}));
+  const valorOrden = (f,key) => key==='n' ? f.n : key==='estado' ? (f.t.pRet??-1) : (f.t[key]??-1);
+  filas.sort((a,b) => {
+    const av=valorOrden(a,EQ_SORT.key), bv=valorOrden(b,EQ_SORT.key);
+    const cmp=typeof av==='string' ? av.localeCompare(bv,'es') : av-bv;
+    return (EQ_SORT.desc ? -cmp : cmp) || b.t.con-a.t.con || a.n.localeCompare(b.n,'es');
+  });
   document.querySelector('.dimsel').innerHTML = ['g','c','s'].map(k =>
       `<button class="btn ${k===dim?'btn-p':''}" data-d="${k}" style="padding:5px 12px;font-size:12px;margin-right:6px">${nom[k]}</button>`).join('');
   document.querySelectorAll('.dimsel button').forEach(b => b.onclick = () => { dim = b.dataset.d; ABIERTOS.clear(); pintar(); });
 
-  const cabeza = `<thead><tr><th>${nom[dim]}</th><th>Evaluados</th><th>Conectados</th><th>Faltas</th><th>% faltas</th><th>Retardos</th><th>Bajo</th><th>Medio</th><th>Crítico</th><th>Puntualidad</th><th>% retardo</th><th>Estado</th></tr></thead>`;
+  const columnas = [
+    ['n',nom[dim],true],['esp','Evaluados'],['con','Conectados'],['fal','Faltas'],['pFal','% faltas'],
+    ['ret','Retardos'],['bajo','Bajo'],['medio','Medio'],['crit','Crítico'],['pPun','Puntualidad'],
+    ['pRet','% retardo'],['estado','Estado']
+  ];
+  const cabeza = `<thead><tr>${columnas.map(([key,lab,first]) => `<th><button type="button" class="sort-h eq-sort ${first?'first':''}" data-sort="${key}" title="Ordenar ${esc(lab)} ${EQ_SORT.key===key&&EQ_SORT.desc?'de menor a mayor':'de mayor a menor'}">${esc(lab)} <i class="uil ${EQ_SORT.key===key?(EQ_SORT.desc?'uil-sort-amount-down':'uil-sort-amount-up'):'uil-sort'}"></i></button></th>`).join('')}</tr></thead>`;
   const cuerpo = filas.map(f => {
     const t = f.t, ab = ABIERTOS.has(f.n), [cc, ct] = chip(t.pRet);
     const hijos = ab ? f.rs.slice().sort((a,b) => (a.est==='FALTA'?-1:b.est==='FALTA'?1:b.min-a.min) || a.n.localeCompare(b.n))
-      .map(r => `<tr class="kid"><td>${esc(r.n)}</td><td colspan="4" style="text-align:left">${esc(r.t)} · entra ${hhmm(r.lim/60)}</td>
+      .map(r => { const sv=sev(r), rowClass=sv==='Crítico'?'kid-crit':sv==='Medio'?'kid-mid':sv==='Bajo'?'kid-low':''; return `<tr class="kid ${rowClass}"><td>${esc(r.n)}</td><td colspan="4" style="text-align:left">${esc(r.t)} · entra ${hhmm(r.lim/60)}</td>
         <td colspan="3"><b>${r.segc===null?'—':hms(r.segc)}</b></td>
         <td colspan="2">${r.est==='FALTA'?'':r.min?'+'+r.min+' min':'a tiempo'}</td>
-        <td colspan="2"><span class="tg" style="background:${r.est==='FALTA'?'var(--indigo-l)':r.min?'var(--yellow-l)':'var(--green-l)'};color:${r.est==='FALTA'?'var(--indigo)':r.min?'var(--yellow)':'var(--green-d)'}">${r.est==='FALTA'?'Falta':r.min?'Retardo':'Puntual'}</span></td></tr>`).join('') : '';
+        <td colspan="2"><span class="tg" style="background:${r.est==='FALTA'?'var(--indigo-l)':r.min?'var(--yellow-l)':'var(--green-l)'};color:${r.est==='FALTA'?'var(--indigo)':r.min?'var(--yellow)':'var(--green-d)'}">${r.est==='FALTA'?'Falta':r.min?'Retardo':'Puntual'}</span></td></tr>`; }).join('') : '';
     return `<tr class="grp ${ab?'open':''}" data-n="${encodeURIComponent(f.n)}">
       <td><span class="car">&#9656;</span> ${esc(f.n)}</td>
       <td>${t.esp}</td><td>${t.con}</td><td>${t.fal}</td><td>${t.pFal.toFixed(1)}%</td><td>${t.ret}</td><td>${t.bajo}</td><td>${t.medio}</td><td class="bad">${t.crit}</td><td>${pTxt(t.pPun)}</td>
@@ -562,7 +609,14 @@ function renderEquipos(d){
   }).join('');
   const tb = $('t-eq');
   tb.innerHTML = cabeza + '<tbody>' + (cuerpo || '<tr><td colspan="12" style="color:var(--text3);padding:24px">Sin datos con estos filtros.</td></tr>') + '</tbody>';
-  tb.onclick = e => { const tr = e.target.closest('tr.grp'); if(!tr) return;
+  tb.onclick = e => {
+    const sort = e.target.closest('[data-sort]');
+    if(sort){
+      const key=sort.dataset.sort;
+      EQ_SORT = EQ_SORT.key===key ? {key,desc:!EQ_SORT.desc} : {key,desc:true};
+      renderEquipos(d); return;
+    }
+    const tr = e.target.closest('tr.grp'); if(!tr) return;
     const n = decodeURIComponent(tr.dataset.n); ABIERTOS.has(n) ? ABIERTOS.delete(n) : ABIERTOS.add(n); pintar(); };
 }
 
@@ -663,7 +717,7 @@ function initDashboard(){
     t.classList.add('active'); $('p-' + t.dataset.p).classList.add('active');
     TAB = t.dataset.p; pintar();
   });
-  $('clr').onclick = () => { Object.keys(MS_STATE).forEach(k => MS_STATE[k] = []); ABIERTOS.clear(); FOCUS_AGENT=null; OPEN_MS = null; pintar(); };
+  $('clr').onclick = () => { Object.keys(MS_STATE).forEach(k => { MS_STATE[k] = []; MS_QUERY[k] = ''; }); ABIERTOS.clear(); FOCUS_AGENT=null; OPEN_MS = null; pintar(); };
   pintar();
 }
 function loadData(){ RAW = EMBEDDED_DATA; initDashboard(); }
