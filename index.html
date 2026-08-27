@@ -63,14 +63,14 @@ body{font-family:'Work Sans',system-ui,sans-serif;background:var(--bg);color:var
 .k-warn .kpi-val,.k-warn .kpi-lbl i{color:var(--yellow);} .k-warn .kpi-bar i{background:var(--gold);}
 .k-bad .kpi-val,.k-bad .kpi-lbl i{color:var(--red);} .k-bad .kpi-bar i{background:var(--red);}
 
-.secondary-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;margin-bottom:12px;}
+.secondary-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin-bottom:12px;}
 .skpi{background:rgba(255,255,255,.72);border:1px solid var(--border);border-radius:10px;padding:9px 12px;min-height:70px;}
 .skpi span{display:block;font-size:9.5px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;line-height:1.25;}
 .skpi b{display:block;font-family:'Sora';font-size:18px;line-height:1.1;margin-top:7px;font-weight:600;}
 @media(max-width:1050px){.secondary-kpis{grid-template-columns:repeat(3,minmax(0,1fr));}}
 @media(max-width:560px){.secondary-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}}
 
-.discipline{display:grid;grid-template-columns:minmax(190px,1.2fr) repeat(4,minmax(110px,.7fr)) minmax(260px,1.7fr);gap:0;background:var(--surface);border:1px solid var(--border);border-left:5px solid var(--green-brand);border-radius:var(--r);margin-bottom:22px;overflow:hidden;}
+.discipline{display:grid;grid-template-columns:minmax(210px,.8fr) minmax(150px,.6fr) minmax(420px,2fr);gap:0;background:var(--surface);border:1px solid var(--border);border-left:5px solid var(--green-brand);border-radius:var(--r);margin-bottom:22px;overflow:hidden;}
 .discipline.d-warn{border-left-color:var(--gold);}.discipline.d-bad{border-left-color:var(--red);}.discipline.d-wait{border-left-color:#aeb3ab;}
 .disc-cell{padding:12px 15px;border-left:1px solid var(--border);min-width:0;}
 .disc-cell:first-child{border-left:0;background:var(--surface2);}
@@ -83,8 +83,8 @@ body{font-family:'Work Sans',system-ui,sans-serif;background:var(--bg);color:var
 .sevitem span{font-size:9px;text-transform:uppercase;letter-spacing:.35px;color:var(--text3);font-weight:700;display:block;}
 .sevitem b{font-family:'Sora';font-size:14px;display:block;line-height:1.2;margin-top:2px;}
 .sev-low b,.sev-low{color:var(--green-d)}.sev-mid b,.sev-mid{color:var(--yellow)}.sev-crit b,.sev-crit{color:var(--red)}
-@media(max-width:1050px){.discipline{grid-template-columns:repeat(3,1fr)}.disc-cell:nth-child(4){border-left:0;border-top:1px solid var(--border)}.disc-cell:nth-child(n+4){border-top:1px solid var(--border)}}
-@media(max-width:640px){.discipline{grid-template-columns:1fr 1fr}.disc-cell:nth-child(odd){border-left:0}.disc-cell:nth-child(n+3){border-top:1px solid var(--border)}}
+@media(max-width:900px){.discipline{grid-template-columns:1fr 1fr}.disc-cell:last-child{grid-column:1/-1;border-left:0;border-top:1px solid var(--border)}}
+@media(max-width:560px){.discipline{grid-template-columns:1fr}.disc-cell{border-left:0;border-top:1px solid var(--border)}.disc-cell:first-child{border-top:0}.disc-cell:last-child{grid-column:auto}}
 
 .tabs{display:flex;gap:24px;border-bottom:1px solid var(--border);margin-bottom:20px;flex-wrap:wrap;}
 .tab{padding:10px 2px;font-size:13.5px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.15s;white-space:nowrap;}
@@ -221,7 +221,7 @@ tr.focus-agent td{background:#f0f7ed;}
   <div class="pane active" id="p-gen">
     <div class="card">
       <div class="ctitle">Cómo va cada horario</div>
-      <div class="csub">Plantilla esperada, quién se conectó y cuántos llegaron tarde al corte seleccionado. Esta vista siempre muestra el piso completo.</div>
+      <div class="csub">Plantilla esperada, conexiones, faltas y retardos del horario seleccionado.</div>
       <div class="story" id="story" style="margin-top:14px"></div>
     </div>
   </div>
@@ -264,10 +264,15 @@ const GRUPOS = [
   {id:'VES',  lab:'Vespertino',   nota:'',                              turnos:['VESPERTINO'],                       ent:875, dia:'DOM'}
 ];
 const FIN_SEM = 540;
+const CORTES = [
+  {id:'MAT', lab:'Matutino', grupos:['MAT']},
+  {id:'MIX', lab:'Mixto', grupos:['MIX']},
+  {id:'VES', lab:'Vespertino', grupos:['CVES','VES']}
+];
 const G_POR_TURNO = {}; GRUPOS.forEach(g => g.turnos.forEach(t => G_POR_TURNO[t] = g.id));
 const G_BY_ID = {}; GRUPOS.forEach(g => G_BY_ID[g.id] = g);
 
-let META = 4, corte = null, DOW = 1, dim = 'g', OPEN_MS = null, TAB = 'gen';
+let META = 4, corte = 'MAT', DOW = 1, dim = 'g', OPEN_MS = null, TAB = 'gen';
 let NOM_SORT_DESC = true, FOCUS_AGENT = null;
 const MS_STATE = {g:[], c:[], s:[], t:[]};
 const ABIERTOS = new Set();
@@ -279,19 +284,21 @@ const esc  = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>
 
 function trabaja(g){ if (DOW <= 4) return true; return DOW === 5 ? g.dia === 'SAB' : g.dia === 'DOM'; }
 function entrada(g){ return DOW >= 5 ? FIN_SEM : g.ent; }
-function vivo(g){ return trabaja(g) && entrada(g) <= corte; }
+function corteActual(){ return CORTES.find(c => c.id === corte) || CORTES[0]; }
+function seleccionado(g){ return corteActual().grupos.includes(g.id); }
+function vivo(g){ return seleccionado(g) && trabaja(g) && entrada(g) <= RAW.corte_datos; }
 
 function evaluar(){
-  const cs = corte*60;
+  const datosHasta = (RAW.corte_datos*60)+59;
   return RAW.rows.map(r => {
     const g = G_BY_ID[G_POR_TURNO[r.t]];
     return {...r, g_: g};
   }).filter(r => r.g_ && vivo(r.g_)).map(r => {
     const lim = entrada(r.g_)*60;
-    const seg = (r.seg !== null && r.seg <= cs) ? r.seg : null;
+    const seg = (r.seg !== null && r.seg <= datosHasta) ? r.seg : null;
     let est = 'FALTA', min = 0;
     if (seg !== null){
-      const tarde = r.g_.id === 'MIX' ? seg >= lim + 60 : seg > lim;
+      const tarde = seg > lim;
       min = tarde ? Math.max(1, Math.floor((seg-lim)/60)) : 0;
       est = min > 0 ? 'RETARDO' : 'PUNTUAL';
     }
@@ -311,7 +318,7 @@ function agg(d){
       t.con++;
       if(r.est==='RETARDO'){
         t.ret++; t.min += r.min;
-        if(r.min <= 5) t.bajo++; else if(r.min <= 14) t.medio++; else t.crit++;
+        if(r.min <= 5) t.bajo++; else if(r.min <= 15) t.medio++; else t.crit++;
       } else t.pun++;
     }
   });
@@ -326,7 +333,7 @@ const cls  = p => p === null ? '' : p <= META ? 'ok' : p <= META+1 ? 'warn' : 'b
 const col  = p => p === null ? 'var(--border)' : p <= META ? 'var(--green-brand)' : p <= META+1 ? 'var(--gold)' : 'var(--red)';
 const chip = p => p === null ? ['c-wait','Pendiente'] : p <= META ? ['c-ok','En meta'] : p <= META+1 ? ['c-warn','Alerta'] : ['c-bad','Fuera de meta'];
 const pTxt = p => p === null ? '—' : p.toFixed(1)+'%';
-const sev = r => r.est !== 'RETARDO' ? null : r.min <= 5 ? 'Bajo' : r.min <= 14 ? 'Medio' : 'Crítico';
+const sev = r => r.est !== 'RETARDO' ? null : r.min <= 5 ? 'Bajo' : r.min <= 15 ? 'Medio' : 'Crítico';
 const sevClass = s => s === 'Bajo' ? 'sev-bajo' : s === 'Medio' ? 'sev-medio' : s === 'Crítico' ? 'sev-critico' : 'sev-na';
 function agrupar(d, campo){
   const map = new Map();
@@ -360,7 +367,7 @@ function renderKPIs(t,d){
     <div class="kpi-lbl"><i class="uil uil-clock-two"></i>Retardos</div>
     <div class="kpi-val">${nf.format(t.ret)}</div>
     <div class="kpi-bar"><i style="width:${t.esp?t.ret*100/t.esp:0}%"></i></div>
-    <div class="kpi-sub">${t.crit} críticos de 15 minutos o más</div>
+    <div class="kpi-sub">${t.crit} críticos de 16 minutos o más</div>
   </div>
   <div class="kpi ${eq.fuera ? 'k-bad':'k-ok'}">
     <div class="kpi-lbl"><i class="uil uil-users-alt"></i>Equipos fuera de meta</div>
@@ -373,8 +380,7 @@ function renderKPIs(t,d){
     <div class="skpi"><span>Conectados</span><b style="color:var(--green-d)">${nf.format(t.con)}</b></div>
     <div class="skpi"><span>Faltas</span><b>${nf.format(t.fal)}</b></div>
     <div class="skpi"><span>% de faltas</span><b>${t.pFal.toFixed(1)}%</b></div>
-    <div class="skpi"><span>Minutos acumulados</span><b>${nf.format(t.min)}</b></div>
-    <div class="skpi"><span>Retardos críticos</span><b style="color:var(--red)">${nf.format(t.crit)}</b></div>`;
+    <div class="skpi"><span>Minutos acumulados</span><b>${nf.format(t.min)}</b></div>`;
   renderDiscipline(t,eq);
 }
 function renderDiscipline(t,eq){
@@ -382,21 +388,19 @@ function renderDiscipline(t,eq){
   const delta = t.pRet === null ? '—' : (t.pRet-META>=0?'+':'')+(t.pRet-META).toFixed(1)+' pp';
   $('discipline').innerHTML = `<div class="discipline ${dcls}">
     <div class="disc-cell"><span class="disc-lbl">Disciplina hoy</span><span class="disc-state ${cls(t.pRet)}">${ct}</span></div>
-    <div class="disc-cell"><span class="disc-lbl">Retardo actual</span><span class="disc-val ${cls(t.pRet)}">${pTxt(t.pRet)}</span></div>
-    <div class="disc-cell"><span class="disc-lbl">Meta</span><span class="disc-val">≤ ${META.toFixed(1)}%</span></div>
-    <div class="disc-cell"><span class="disc-lbl">Brecha</span><span class="disc-val ${cls(t.pRet)}">${delta}</span></div>
-    <div class="disc-cell"><span class="disc-lbl">Equipos fuera</span><span class="disc-val">${eq.fuera} de ${eq.total}</span></div>
+    <div class="disc-cell"><span class="disc-lbl">Brecha contra la meta</span><span class="disc-val ${cls(t.pRet)}">${delta}</span></div>
     <div class="disc-cell"><span class="disc-lbl">Composición de severidad</span><div class="sevline">
       <div class="sevitem sev-low"><span>Bajo · 1–5</span><b>${t.bajo}</b></div>
-      <div class="sevitem sev-mid"><span>Medio · 6–14</span><b>${t.medio}</b></div>
-      <div class="sevitem sev-crit"><span>Crítico · 15+</span><b>${t.crit}</b></div>
+      <div class="sevitem sev-mid"><span>Medio · 6–15</span><b>${t.medio}</b></div>
+      <div class="sevitem sev-crit"><span>Crítico · 16+</span><b>${t.crit}</b></div>
     </div></div>
   </div>`;
 }
 
-/* ---------------- Vista general (siempre sin filtros) ---------------- */
+/* ---------------- Vista general del horario seleccionado ---------------- */
 function renderGeneral(todo){
-  $('story').innerHTML = GRUPOS.map(g => {
+  const grupos = GRUPOS.filter(g => seleccionado(g));
+  $('story').innerHTML = grupos.map(g => {
     const enPlantilla = RAW.rows.filter(r => G_POR_TURNO[r.t] === g.id);
     if (!enPlantilla.length) return '';
     const sub = `entrada ${hhmm(entrada(g))}${g.nota ? ' · ' + g.nota : ''}`;
@@ -409,7 +413,7 @@ function renderGeneral(todo){
         <div class="st-top"><span class="st-name">${g.lab}</span>
           <span class="st-hr">${sub} · ${enPlantilla.length} en plantilla</span>
           <span class="chip c-wait">Pendiente de inicio</span></div>
-        <div class="st-txt">Inicia a las <b>${hhmm(entrada(g))}</b>. No cuenta como falta ni entra en los indicadores del corte de las ${hhmm(corte)}.</div></div>`;
+        <div class="st-txt">Inicia a las <b>${hhmm(entrada(g))}</b>. Todavía no cuenta como falta ni entra en los indicadores.</div></div>`;
     const t = agg(todo.filter(r => r.gr === g.id));
     const [cc, ct] = chip(t.pRet);
     return `<div class="st">
@@ -614,7 +618,7 @@ function bajar(rs, nombre){
     'Asesor': r.n, 'Usuario': r.u, 'Turno': r.t, 'Horario': r.grLab, 'Hora de entrada': hhmm(r.lim/60),
     'Hora de llegada': r.segc === null ? '' : hms(r.segc),
     'Minutos de retardo': r.min || '', 'Severidad': sev(r) || '', 'Estado': r.est === 'FALTA' ? 'Falta' : 'Retardo',
-    'Supervisor': r.s, 'Coordinador': r.c, 'Gerencia': r.g, 'Corte': hhmm(corte), 'Fecha': RAW.fecha }));
+    'Supervisor': r.s, 'Coordinador': r.c, 'Gerencia': r.g, 'Corte': corteActual().lab, 'Fecha': RAW.fecha }));
   const ws = XLSX.utils.json_to_sheet(data);
   ws['!cols'] = Object.keys(data[0]).map(k => ({wch: Math.min(34, Math.max(11, k.length + 2, ...data.slice(0,200).map(x => String(x[k] ?? '').length + 2)))}));
   const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, nombre);
@@ -642,19 +646,11 @@ function pintar(){
 function initDashboard(){
   META = RAW.meta; DOW = RAW.dow;
   if(RAW.entradas) RAW.entradas.MIXTO = 750;
-  const cortes = DOW >= 5
-    ? [{l:'09:30', m:570}, {l:'15:00', m:900}, {l:'Todos', m:1440}]
-    : [{l:'8:00 am', m:480}, {l:'12:30 pm', m:750}, {l:'3:00 pm', m:900}, {l:'Todos', m:1440}];
-  const ahora = new Date(); const mNow = ahora.getHours()*60 + ahora.getMinutes();
-  corte = cortes[0].m; cortes.forEach(c => { if (mNow >= c.m) corte = c.m; });
-  if (RAW.corte_datos && corte > RAW.corte_datos + 1) {
-    const validos = cortes.filter(c => c.m <= RAW.corte_datos + 1);
-    if (validos.length) corte = validos[validos.length-1].m;
-  }
-  $('cuts').innerHTML = cortes.map(c => `<button data-m="${c.m}" class="${c.m===corte?'on':''}">${c.l}</button>`).join('');
+  corte = DOW === 6 ? 'VES' : DOW === 5 ? 'MAT' : RAW.corte_datos >= 780 ? 'VES' : RAW.corte_datos >= 750 ? 'MIX' : 'MAT';
+  $('cuts').innerHTML = CORTES.map(c => `<button data-id="${c.id}" class="${c.id===corte?'on':''}">${c.lab}</button>`).join('');
   $('cuts').onclick = e => { const b = e.target.closest('button'); if(!b) return;
-    corte = +b.dataset.m; [...$('cuts').children].forEach(x => x.classList.toggle('on', x === b)); ABIERTOS.clear(); pintar(); };
-  $('cuthint').textContent = 'Los datos del archivo llegan hasta las ' + hhmm(RAW.corte_datos) + '.';
+    corte = b.dataset.id; [...$('cuts').children].forEach(x => x.classList.toggle('on', x === b)); ABIERTOS.clear(); pintar(); };
+  $('cuthint').textContent = 'Datos disponibles hasta las ' + hhmm(RAW.corte_datos) + '.';
 
   const D = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'][DOW];
   const M = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
