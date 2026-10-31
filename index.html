@@ -277,6 +277,8 @@ const GRUPOS = [
   {id:'VES',  lab:'Vespertino',   nota:'',                              turnos:['VESPERTINO'],                       ent:875, dia:'DOM'}
 ];
 const FIN_SEM = 540;
+// Excepcion solicitada para esta fecha; las demas fechas conservan su calendario.
+const CALENDARIOS_ESPECIALES = {"2026-10-31": {"grupos": ["CVES", "VES"], "entradas": {"CVES": 875, "VES": 875}, "corte": "VES"}};
 const CORTES = [
   {id:'MAT', lab:'Matutino', grupos:['MAT']},
   {id:'MIX', lab:'Mixto', grupos:['MIX']},
@@ -298,8 +300,10 @@ const hhmm = m => String(Math.floor(m/60)).padStart(2,'0')+':'+String(Math.floor
 const hms  = s => hhmm(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');
 const esc  = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-function trabaja(g){ if (DOW <= 4) return true; return DOW === 5 ? g.dia === 'SAB' : g.dia === 'DOM'; }
-function entrada(g){ return DOW >= 5 ? FIN_SEM : g.ent; }
+function calendarioEspecial(){ return CALENDARIOS_ESPECIALES[RAW.fecha] || null; }
+function trabaja(g){ const especial = calendarioEspecial(); if(especial) return especial.grupos.includes(g.id); if (DOW <= 4) return true; return DOW === 5 ? g.dia === 'SAB' : g.dia === 'DOM'; }
+function entrada(g){ const especial = calendarioEspecial(); if(especial && especial.entradas[g.id] !== undefined) return especial.entradas[g.id]; return DOW >= 5 ? FIN_SEM : g.ent; }
+function corteInicial(){ const especial = calendarioEspecial(); return especial ? especial.corte : DOW === 6 ? 'VES' : DOW === 5 ? 'MAT' : RAW.corte_datos >= 780 ? 'VES' : RAW.corte_datos >= 750 ? 'MIX' : 'MAT'; }
 function corteActual(){ return CORTES.find(c => c.id === corte) || CORTES[0]; }
 function seleccionado(g){ return corteActual().grupos.includes(g.id); }
 function vivo(g){ return seleccionado(g) && trabaja(g) && entrada(g) <= RAW.corte_datos; }
@@ -427,7 +431,7 @@ function renderGeneral(todo){
         <div class="st-top"><span class="st-name">${g.lab}</span>
           <span class="st-hr">${enPlantilla.length} en plantilla</span>
           <span class="chip c-wait">No labora hoy</span></div>
-        <div class="st-txt">Este horario no trabaja ${DOW === 5 ? 'los sábados' : 'los domingos'}, por eso no se cuenta como falta.</div></div>`;
+        <div class="st-txt">${calendarioEspecial() ? 'Este horario no labora en la jornada excepcional de hoy' : 'Este horario no trabaja ' + (DOW === 5 ? 'los sábados' : 'los domingos')}, por eso no se cuenta como falta.</div></div>`;
     if (!vivo(g)) return `<div class="st" style="opacity:.62">
         <div class="st-top"><span class="st-name">${g.lab}</span>
           <span class="st-hr">${sub} · ${enPlantilla.length} en plantilla</span>
@@ -709,11 +713,11 @@ function pintar(){
 function initDashboard(){
   META = RAW.meta; DOW = RAW.dow;
   if(RAW.entradas) RAW.entradas.MIXTO = 750;
-  corte = DOW === 6 ? 'VES' : DOW === 5 ? 'MAT' : RAW.corte_datos >= 780 ? 'VES' : RAW.corte_datos >= 750 ? 'MIX' : 'MAT';
+  corte = corteInicial();
   $('cuts').innerHTML = CORTES.map(c => `<button data-id="${c.id}" class="${c.id===corte?'on':''}">${c.lab}</button>`).join('');
   $('cuts').onclick = e => { const b = e.target.closest('button'); if(!b) return;
     corte = b.dataset.id; [...$('cuts').children].forEach(x => x.classList.toggle('on', x === b)); ABIERTOS.clear(); pintar(); };
-  $('cuthint').textContent = 'Datos disponibles hasta las ' + hhmm(RAW.corte_datos) + '.';
+  $('cuthint').textContent = 'Datos disponibles hasta las ' + hhmm(RAW.corte_datos) + '.' + (calendarioEspecial() ? ' Excepción del 31/10: hoy laboran Vespertino y C Vespertino' + (entrada(G_BY_ID.CVES) === entrada(G_BY_ID.VES) ? ', ambos con entrada a las ' + hhmm(entrada(G_BY_ID.VES)) : '') + '.' : '');
 
   const D = ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'][DOW];
   const M = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
